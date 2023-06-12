@@ -16,7 +16,6 @@ const lexer = (data) => {
     .replace(/,/g, " , ")
     .replace(/\s+/g, " ");
   const splittedResponse = formattedResponse.split(" ");
-  console.log("splittedResponse", splittedResponse);
   const finalResponse = [];
 
   splittedResponse.forEach((token) => {

@@ -19,7 +19,7 @@ else {
 
 const main = () => {
   const lexerAnalysis = lexer(data);
-  console.log(lexerAnalysis);
+  console.log("lexical analyzer response: ", lexerAnalysis);
   syntactic(lexerAnalysis);
 };
 
