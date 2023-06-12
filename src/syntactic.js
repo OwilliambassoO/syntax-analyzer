@@ -7,15 +7,7 @@ const syntactic = (data) => {
 
   data.forEach((token) => {
     if (validSyntax === true) {
-      if (token.type === "DELIMITER") {
-        if (token.token !== ",") {
-          delimiter++;
-        }
-        if (previousToken === "OPERATOR") {
-          validSyntax = false;
-          return invalidPrevious(token.token, previousToken);
-        }
-      }
+      if (token.type === "DELIMITER" && token.token !== ",") delimiter++;
       if (token.type === "LITERAL") {
         if (previousToken === "LITERAL" || previousToken === "KEYWORD") {
           validSyntax = false;

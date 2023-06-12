@@ -12,6 +12,7 @@ const lexer = (data) => {
   const formattedResponse = data
     .replace(/\n+/g, " ")
     .replace(/([\[\](){}])/g, " $1 ")
+    .replace(/([-+*/])/g, " $1 ")
     .replace(/,/g, " , ")
     .replace(/,/g, " , ")
     .replace(/\s+/g, " ");
