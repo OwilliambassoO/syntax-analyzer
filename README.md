@@ -41,3 +41,13 @@ The input can be received through a device or files. It may or may not have an i
 - Software Developer
 - Computer Engineer
 - Insta: @williambasso12
+
+# How to use
+
+- You need to install Node.js on your machine.
+- There is no need to use the "npm install" command.
+- To initialize, you only need to use the following script:
+
+```
+npm start
+```
