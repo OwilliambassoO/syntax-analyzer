@@ -1,7 +1,7 @@
 const { lexer } = require("./lexer.js");
 const { syntactic } = require("./syntactic.js");
 
-const data = `var
+const data = `
 int cont, num
 real cont2
 
@@ -18,6 +18,7 @@ else {
 }`;
 
 const main = () => {
+  console.clear();
   const lexerAnalysis = lexer(data);
   console.log("lexical analyzer response: ", lexerAnalysis);
   syntactic(lexerAnalysis);
