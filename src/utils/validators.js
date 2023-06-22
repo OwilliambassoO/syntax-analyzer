@@ -3,7 +3,8 @@ const {
   operators,
   delimiter,
   boolean,
-} = require("../consts/lexerConsts.js");
+  conditionals,
+} = require("../consts/types.js");
 
 const isValidId = (data) => {
   return /^[a-zA-Z0-9]+$/.test(data) || /^[a-zA-Z]+$/.test(data);
@@ -22,11 +23,15 @@ const isValidBoolean = (data) => {
 };
 
 const isValidKeyWord = (data) => {
-  return keyWords.includes(data);
+  return keyWords.find((keyword) => keyword.name === data);
 };
 
 const isValidOperator = (data) => {
   return operators.includes(data);
+};
+
+const isValidConditional = (data) => {
+  return conditionals.includes(data);
 };
 
 const isValidDelimiter = (data) => {
@@ -41,4 +46,5 @@ module.exports = {
   isValidOperator,
   isValidDelimiter,
   isValidBoolean,
+  isValidConditional,
 };

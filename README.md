@@ -51,3 +51,5 @@ The input can be received through a device or files. It may or may not have an i
 ```
 npm start
 ```
+
+- To change your input values, you need to go in src/main.js and change the const "data".

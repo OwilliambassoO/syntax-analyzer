@@ -6,7 +6,8 @@ const {
   isValidOperator,
   isValidDelimiter,
   isValidBoolean,
-} = require("./utils/lexerValidations.js");
+  isValidConditional,
+} = require("./utils/validators.js");
 
 const lexer = (data) => {
   const formattedResponse = data
@@ -21,10 +22,10 @@ const lexer = (data) => {
 
   splittedResponse.forEach((token) => {
     if (isValidString(token) || isValidNumber(token) || isValidBoolean(token)) {
-      finalResponse.push({ type: "LITERAL", token });
+      finalResponse.push({ type: "LITERAL", name: token });
     }
     if (isValidKeyWord(token)) {
-      finalResponse.push({ type: "KEYWORD", token });
+      finalResponse.push({ type: "KEYWORD", name: token });
     }
     if (
       isValidId(token) &&
@@ -32,13 +33,16 @@ const lexer = (data) => {
       !isValidBoolean(token) &&
       !isValidNumber(token)
     ) {
-      finalResponse.push({ type: "ID", token });
+      finalResponse.push({ type: "ID", name: token });
     }
     if (isValidOperator(token)) {
-      finalResponse.push({ type: "OPERATOR", token });
+      finalResponse.push({ type: "OPERATOR", name: token });
+    }
+    if (isValidConditional(token)) {
+      finalResponse.push({ type: "CONDITIONAL", name: token });
     }
     if (isValidDelimiter(token)) {
-      finalResponse.push({ type: "DELIMITER", token });
+      finalResponse.push({ type: "DELIMITER", name: token });
     }
   });
 
