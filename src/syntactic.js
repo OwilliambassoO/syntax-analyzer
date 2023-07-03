@@ -337,8 +337,6 @@ const syntactic = (data) => {
       }
     }
   }
-
-  return true;
 };
 
 module.exports = { syntactic };
