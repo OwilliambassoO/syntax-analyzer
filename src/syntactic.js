@@ -1,9 +1,11 @@
-const { keyWords, operators, conditionals } = require("./consts/types.js");
 const {
-  isValidNumber,
-  isValidBoolean,
-  isValidString,
-} = require("./utils/validators.js");
+  keyWords,
+  operators,
+  conditionals,
+  reservedDeclarations,
+  endOfDeclaration,
+} = require("./consts/types.js");
+const { isValidNumber, isValidBoolean } = require("./utils/validators.js");
 
 const syntactic = (data) => {
   let nextIdx = 0;
@@ -15,6 +17,87 @@ const syntactic = (data) => {
       const keyWordProps = keyWords.find(
         (keyWord) => keyWord.name === token.name
       );
+
+      if (keyWordProps.conditional === false) {
+        const declarations = [];
+
+        if (
+          reservedDeclarations.includes(token.name) &&
+          data[nextIdx].type !== "ID"
+        ) {
+          console.log(
+            "\x1b[31m%s\x1b[0m",
+            `error in ${token.name}, Unexpected token ${data[nextIdx].name}`
+          );
+          process.exit();
+        }
+
+        if (
+          reservedDeclarations.includes(token.name) &&
+          !endOfDeclaration.includes(data[nextIdx + 1].name)
+        ) {
+          console.log(
+            "\x1b[31m%s\x1b[0m",
+            `error in ${data[nextIdx].name}, Unexpected token ${
+              data[nextIdx + 1].name
+            }`
+          );
+          process.exit();
+        }
+
+        if (
+          reservedDeclarations.includes(token.name) &&
+          data[nextIdx + 1].name === ","
+        ) {
+          let currentIdx = nextIdx + 2;
+
+          if (data[currentIdx]?.type !== "ID") {
+            console.log(
+              "\x1b[31m%s\x1b[0m",
+              `error in ${data[currentIdx].name}, expected token type "ID"`
+            );
+            process.exit();
+          }
+
+          for (currentIdx; data[currentIdx]?.name !== ";"; currentIdx++) {
+            if (
+              data[currentIdx]?.type === "ID" &&
+              !endOfDeclaration.includes(data[currentIdx + 1].name)
+            ) {
+              console.log(
+                "\x1b[31m%s\x1b[0m",
+                `error in ${data[currentIdx].name}, Unexpected token ${
+                  data[currentIdx + 1].name
+                }`
+              );
+              process.exit();
+            }
+
+            if (
+              data[currentIdx]?.type === "ID" &&
+              !endOfDeclaration.includes(data[currentIdx - 1].name)
+            ) {
+              console.log(
+                "\x1b[31m%s\x1b[0m",
+                `error in ${data[currentIdx].name}, Unexpected token ${
+                  data[currentIdx - 1].name
+                }`
+              );
+              process.exit();
+            }
+
+            declarations.push(data[currentIdx]);
+          }
+
+          if (!declarations[0]) {
+            console.log(
+              "\x1b[31m%s\x1b[0m",
+              `error in ${token.name}, you need a declaration`
+            );
+            process.exit();
+          }
+        }
+      }
 
       if (keyWordProps.conditional === true) {
         const conditional = [];
@@ -196,9 +279,66 @@ const syntactic = (data) => {
         }
       }
     }
+
+    if (token.type === "ID") {
+      const hasCondId = [];
+      let currentIdx = nextIdx - 1;
+
+      if (
+        !reservedDeclarations.includes(data[currentIdx - 1].name) &&
+        data[currentIdx - 1].name !== ","
+      ) {
+        currentIdx--;
+        for (currentIdx; currentIdx > 0; currentIdx--) {
+          if (
+            data[currentIdx].name === token.name &&
+            data[currentIdx - 1] !== undefined
+          ) {
+            hasCondId.push(currentIdx);
+          }
+        }
+
+        if (!hasCondId[0]) {
+          console.log(
+            "\x1b[31m%s\x1b[0m",
+            `error in token ${token.name}, not defined yet`
+          );
+          process.exit();
+        }
+      }
+    }
+
+    if (token.type === "LITERAL") {
+      if (
+        data[nextIdx - 2]?.type === "LITERAL" ||
+        data[nextIdx]?.type === "LITERAL"
+      ) {
+        console.log(
+          "\x1b[31m%s\x1b[0m",
+          `error unexpected token ${token.name}`
+        );
+        process.exit();
+      }
+    }
+
+    if (token.type === "OPERATOR") {
+      if (token.name !== "+" && token.name !== "-") {
+        if (
+          data[nextIdx - 2].name === ";" ||
+          data[nextIdx - 2].name === "}" ||
+          data[nextIdx - 2].name === ")"
+        ) {
+          console.log(
+            "\x1b[31m%s\x1b[0m",
+            `error unexpected token ${token.name} before ${data[nextIdx].name}`
+          );
+          process.exit();
+        }
+      }
+    }
   }
 
-  return console.log("\x1b[32m%s\x1b[0m", "Success: Valid Syntax");
+  return true;
 };
 
 module.exports = { syntactic };
