@@ -51,7 +51,7 @@ const keyWords = [
   },
 ];
 
-const operators = ["+", "-", "*", "/", "="];
+const operators = ["+", "-", "*", "/", "=", "^"];
 
 const conditionals = [
   "==",
@@ -62,12 +62,20 @@ const conditionals = [
   "<",
   ">=",
   "<=",
-  "<>",
-  "^",
   "&&",
   "||",
 ];
-const delimiter = ["(", ")", "[", "]", "{", "}", ","];
+const delimiter = ["(", ")", "[", "]", "{", "}", ",", ";"];
 const boolean = ["true", "false"];
+const reservedDeclarations = ["var", "let", "const", "int", "real"];
+const endOfDeclaration = ["=", ",", ";"];
 
-module.exports = { keyWords, operators, delimiter, boolean, conditionals };
+module.exports = {
+  keyWords,
+  operators,
+  delimiter,
+  boolean,
+  conditionals,
+  reservedDeclarations,
+  endOfDeclaration,
+};

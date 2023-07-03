@@ -3,21 +3,20 @@
 Build a Syntax Analyzer for a hypothetical language, exemplified below:
 
 ```
- var
-    int cont, num
-    real cont2
+int cont, num;
+real cont2;
 
- num = 0
- while(cont < 10) {
-    cont2 = 3.1415 * contador ^ 2
-    if (cont < 5) {
-       num = num + cont2
-    }
-    else {
-       cont = 0
-    }
-       cont = cont + 1
- }
+num = 0;
+while(cont < 10) {
+  cont2 = 3.1415 * cont ^ 2;
+  if (cont < 5) {
+    num = num + cont2;
+  }
+  else {
+    cont = '0' + 1;
+  }
+  cont = cont + 1;
+}
 ```
 
 # Rules
