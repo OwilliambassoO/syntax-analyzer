@@ -12,7 +12,7 @@ const c3e = (data) => {
   let startLoopNum = 0;
   let nextIdx = 0;
 
-  console.log("\x1b[35m%s\x1b[0m", "c3e response: ");
+  console.log("\x1b[35m%s\x1b[0m", "c3e response: \n");
 
   for (const token of data) {
     nextIdx++;
@@ -142,7 +142,7 @@ const c3e = (data) => {
           data[currVariableIdx].name !== ";";
           currVariableIdx++
         ) {
-          declaration = declaration + ` ${data[currVariableIdx].name}`;
+            declaration = declaration + ` ${data[currVariableIdx].name}`;
         }
 
         process.stdout.write(`${declaration}\n`);
@@ -199,6 +199,7 @@ const c3e = (data) => {
       }
     }
   }
+  console.log("\n");
 };
 
 module.exports = { c3e };

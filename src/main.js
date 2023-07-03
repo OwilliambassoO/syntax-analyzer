@@ -13,16 +13,27 @@ while(cont < 10) {
     num = num + cont2;
   }
   else {
-    cont = '0' + 1;
+    cont = 0 + 1;
   }
   cont = cont + 1;
 }`;
 
 const main = () => {
   const lexerAnalysis = lexer(data);
-  console.log("lexical analyzer response: ", lexerAnalysis);
+
+  console.log(
+    "\x1b[35mlexical analyzer response: \x1b[0m\n",
+    lexerAnalysis,
+    "\n"
+  );
+
   syntactic(lexerAnalysis);
-  console.log("\x1b[32m%s\x1b[0m", "Success: Valid Syntax");
+
+  console.log(
+    "\x1b[35msyntactic analyzer response: \x1b[0m",
+    "\x1b[32mSuccess: Valid Syntax\x1b[0m\n"
+  );
+
   c3e(lexerAnalysis);
 };
 

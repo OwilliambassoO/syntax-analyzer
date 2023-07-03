@@ -8,7 +8,20 @@ const {
 const { isValidNumber, isValidBoolean } = require("./utils/validators.js");
 
 const syntactic = (data) => {
+  const startLoopLength = data.filter((token) => token.name === "{").length;
+  const endLoopLength = data.filter((token) => token.name === "}").length;
   let nextIdx = 0;
+
+  if (startLoopLength !== endLoopLength) {
+    if (startLoopLength < endLoopLength) {
+      console.log("\x1b[31m%s\x1b[0m", `error, Unexpected token }`);
+      process.exit();
+    }
+    if (startLoopLength > endLoopLength) {
+      console.log("\x1b[31m%s\x1b[0m", `error, Unexpected token {`);
+      process.exit();
+    }
+  }
 
   for (const token of data) {
     nextIdx++;
@@ -334,6 +347,39 @@ const syntactic = (data) => {
           );
           process.exit();
         }
+      }
+    }
+
+    if (token.type === "DELIMITER") {
+      if (token.name === "(" || token.name === ")") {
+        if (
+          !(
+            data[nextIdx - 2].type === "KEYWORD" ||
+            data[nextIdx].name === "{" ||
+            data[nextIdx + 1].type === "OPERATOR" ||
+            data[nextIdx - 3].type === "OPERATOR" ||
+            (data[nextIdx - 1].name === "(" &&
+              (data[nextIdx].type === "LITERAL" ||
+                data[nextIdx].type === "ID") &&
+              data[nextIdx + 1].name === ")")
+          )
+        ) {
+          console.log(
+            "\x1b[31m%s\x1b[0m",
+            `error unexpected token ${token.name} before ${data[nextIdx].name}`
+          );
+          process.exit();
+        }
+      }
+      if (
+        token.name === "{" &&
+        (data[nextIdx].name === "{" || data[nextIdx].name === "}")
+      ) {
+        console.log(
+          "\x1b[31m%s\x1b[0m",
+          `error, unexpected use of token ${token.name} before ${data[nextIdx].name}`
+        );
+        process.exit();
       }
     }
   }
