@@ -129,105 +129,199 @@ const c3e = (data) => {
         endLoopLength--;
       }
     }
-    if (token.type === "ID" || token.type === "LITERAL") {
-      if (
-        data[nextIdx].name === "=" &&
-        !reservedDeclarations.includes(data[nextIdx - 2].name)
+    if (
+      token.type === "ID" &&
+      data[nextIdx].name === "=" &&
+      !reservedDeclarations.includes(data[nextIdx - 2].name)
+    ) {
+      const declarations = [];
+      let currVariableIdx = nextIdx;
+
+      for (
+        currVariableIdx;
+        data[currVariableIdx].name !== ";";
+        currVariableIdx++
       ) {
-        const declarations = [];
-        let currVariableIdx = nextIdx;
+        if (
+          data[currVariableIdx].name !== "=" &&
+          (currVariableIdx !== nextIdx || currVariableIdx !== nextIdx + 1)
+        ) {
+          declarations.push(data[currVariableIdx]);
+        }
+      }
+
+      let currGroupIdx = 0;
+      let currGroupPosition = 0;
+      const numOfGroups = [];
+
+      for (currGroupIdx; currGroupIdx < declarations.length; currGroupIdx++) {
+        if (currGroupPosition <= 2) {
+          currGroupPosition++;
+        }
+        if (
+          currGroupPosition === 3 ||
+          declarations[currGroupIdx + 1] === undefined ||
+          (declarations[currGroupIdx + 2] === undefined &&
+            currGroupPosition > 2)
+        ) {
+          numOfGroups.push(currGroupPosition);
+          currGroupPosition = 0;
+        }
+      }
+
+      let currGroupNumIdx = 0;
+      const groupWithTemporary = [];
+
+      for (
+        currGroupNumIdx;
+        currGroupNumIdx < numOfGroups.length;
+        currGroupNumIdx++
+      ) {
+        let currGroupLog = "";
+        let currGroupNum = 0;
+        let currGroupNumStart = (currGroupNumIdx + 1) * 3 - 3;
 
         for (
-          currVariableIdx;
-          data[currVariableIdx].name !== ";";
-          currVariableIdx++
+          currGroupNum;
+          currGroupNum < numOfGroups[currGroupNumIdx];
+          currGroupNum++
         ) {
           if (
-            data[currVariableIdx].name !== "=" &&
-            (currVariableIdx !== nextIdx || currVariableIdx !== nextIdx + 1)
+            currGroupNum === numOfGroups[currGroupNumIdx] - 1 &&
+            numOfGroups[currGroupNumIdx + 1] === undefined
           ) {
-            declarations.push(data[currVariableIdx]);
-          }
-        }
-
-        let currGroupIdx = 0;
-        let currGroupPosition = 0;
-        const numOfGroups = [];
-
-        for (currGroupIdx; currGroupIdx < declarations.length; currGroupIdx++) {
-          if (currGroupPosition <= 2) {
-            currGroupPosition++;
-          }
-          if (
-            currGroupPosition === 3 ||
-            declarations[currGroupIdx + 1] === undefined ||
-            (declarations[currGroupIdx + 2] === undefined &&
-              currGroupPosition > 2)
-          ) {
-            numOfGroups.push(currGroupPosition);
-            currGroupPosition = 0;
-          }
-        }
-
-        let currGroupNumIdx = 0;
-        const groupWithTemporary = [];
-
-        for (
-          currGroupNumIdx;
-          currGroupNumIdx < numOfGroups.length;
-          currGroupNumIdx++
-        ) {
-          let currGroupLog = "";
-          let currGroupNum = 0;
-          let currGroupNumStart = (currGroupNumIdx + 1) * 3 - 3;
-
-          for (
-            currGroupNum;
-            currGroupNum < numOfGroups[currGroupNumIdx];
-            currGroupNum++
-          ) {
-            if (
-              currGroupNum === numOfGroups[currGroupNumIdx] - 1 &&
-              numOfGroups[currGroupNumIdx + 1] === undefined
-            ) {
-              if (numOfGroups.length === 1) {
-                if (numOfGroups[currGroupNumIdx] === 1) {
-                  console.log(
-                    `${token.name} = ${declarations[currGroupNumStart].name}`
-                  );
-                } else {
-                  console.log(
-                    `${token.name} =${currGroupLog} ${declarations[currGroupNumStart].name}`
-                  );
-                }
+            if (numOfGroups.length === 1) {
+              if (numOfGroups[currGroupNumIdx] === 1) {
+                console.log(
+                  `${token.name} = ${declarations[currGroupNumStart].name}`
+                );
               } else {
-                // AQUI QUE FAZ A MAGIA ACONTECER
-                if (declarations[currGroupNumStart + 1] === undefined) {
-                  groupWithTemporary.push(
-                    `t${currGroupNumIdx} = ${
-                      declarations[currGroupNumStart - 2].name
-                    }${currGroupLog} ${declarations[currGroupNumStart].name}`
-                  );
-                  groupWithTemporary.reverse().forEach((line) => {
-                    console.log(line);
-                  });
-                }
-              }
-            } else {
-              if (currGroupNum < 2) {
-                currGroupLog =
-                  currGroupLog + ` ${declarations[currGroupNumStart].name}`;
-              } else {
-                groupWithTemporary.push(
-                  `${token.name} =${currGroupLog} t${currGroupNumIdx + 1}`
+                console.log(
+                  `${token.name} =${currGroupLog} ${declarations[currGroupNumStart].name}`
                 );
               }
+            } else {
+              if (declarations[currGroupNumStart + 1] === undefined) {
+                groupWithTemporary.push(
+                  `T${currGroupNumIdx} = ${
+                    declarations[currGroupNumStart - 2].name
+                  }${currGroupLog} ${declarations[currGroupNumStart].name}`
+                );
+                groupWithTemporary.reverse().forEach((line) => {
+                  console.log(line);
+                });
+              }
             }
-            if ([1] !== undefined) currGroupNumStart++;
+          } else {
+            if (currGroupNum < 2) {
+              currGroupLog =
+                currGroupLog + ` ${declarations[currGroupNumStart].name}`;
+            } else {
+              groupWithTemporary.push(
+                `${token.name} =${currGroupLog} T${currGroupNumIdx + 1}`
+              );
+            }
           }
+          currGroupNumStart++;
         }
+      }
+    }
+    if (
+      (token.type === "ID" || token.type === "LITERAL") &&
+      data[nextIdx].type === "OPERATOR" &&
+      [";", "{", "}"].includes(data[nextIdx - 2].name) &&
+      data[nextIdx].name !== "="
+    ) {
+      const declarations = [];
+      let currVariableIdx = nextIdx;
 
-        // process.stdout.write(`${declaration}\n`);
+      for (
+        currVariableIdx;
+        data[currVariableIdx].name !== ";";
+        currVariableIdx++
+      ) {
+        if (
+          data[currVariableIdx].name !== "=" &&
+          (currVariableIdx !== nextIdx || currVariableIdx !== nextIdx + 1)
+        ) {
+          declarations.push(data[currVariableIdx]);
+        }
+      }
+
+      let currGroupIdx = 0;
+      let currGroupPosition = 0;
+      const numOfGroups = [];
+
+      for (currGroupIdx; currGroupIdx < declarations.length; currGroupIdx++) {
+        if (currGroupPosition <= 2) {
+          currGroupPosition++;
+        }
+        if (
+          currGroupPosition === 3 ||
+          declarations[currGroupIdx + 1] === undefined ||
+          (declarations[currGroupIdx + 2] === undefined &&
+            currGroupPosition > 2)
+        ) {
+          numOfGroups.push(currGroupPosition);
+          currGroupPosition = 0;
+        }
+      }
+
+      let currGroupNumIdx = 0;
+      const groupWithTemporary = [];
+
+      for (
+        currGroupNumIdx;
+        currGroupNumIdx < numOfGroups.length;
+        currGroupNumIdx++
+      ) {
+        let currGroupLog = "";
+        let currGroupNum = 0;
+        let currGroupNumStart = (currGroupNumIdx + 1) * 3 - 3;
+
+        for (
+          currGroupNum;
+          currGroupNum < numOfGroups[currGroupNumIdx];
+          currGroupNum++
+        ) {
+          if (
+            currGroupNum === numOfGroups[currGroupNumIdx] - 1 &&
+            numOfGroups[currGroupNumIdx + 1] === undefined
+          ) {
+            if (numOfGroups.length === 1) {
+              if (numOfGroups[currGroupNumIdx] === 1) {
+                console.log(
+                  `${token.name}${declarations[currGroupNumStart].name}`
+                );
+              } else {
+                console.log(
+                  `${token.name}${currGroupLog} ${declarations[currGroupNumStart].name}`
+                );
+              }
+            } else {
+              if (declarations[currGroupNumStart + 1] === undefined) {
+                groupWithTemporary.push(
+                  `T${currGroupNumIdx} = ${
+                    declarations[currGroupNumStart - 2].name
+                  }${currGroupLog} ${declarations[currGroupNumStart].name}`
+                );
+                groupWithTemporary.reverse().forEach((line) => {
+                  console.log(line);
+                });
+              }
+            }
+          } else {
+            if (currGroupNum < 2) {
+              currGroupLog =
+                currGroupLog + ` ${declarations[currGroupNumStart].name}`;
+            } else {
+              groupWithTemporary.push(
+                `${token.name}${currGroupLog} T${currGroupNumIdx + 1}`
+              );
+            }
+          }
+          currGroupNumStart++;
+        }
       }
     }
 
